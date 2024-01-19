@@ -78,5 +78,5 @@ print(results)
 
 sorted_results = sorted(results, key=lambda x: x['mean_precisions'])
 print(sorted_results)
-with open('benchmark_data.json', 'w') as f:
+with open('benchmark.json', 'w') as f:
     json.dump(sorted_results, f, indent=2, ensure_ascii=False)
