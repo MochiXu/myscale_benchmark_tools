@@ -1,0 +1,82 @@
+import json
+from utils import walk_result_file_paths, convert_string2unique_number
+
+results = []
+paths = [
+    './benchmark_results/CloudTest_v0.0.4_github_benchmark',
+    './benchmark_results/CloudTest_v0.0.3_github_benchmark/laion5m/p2.x1_pod5_laion5m',
+    './benchmark_results/CloudTest_v0.0.3_github_benchmark/laion5m/qdrant-laion5m-4c32gb-client-us-east-1-server-us-east-1',
+    './benchmark_results/CloudTest_v0.0.3_github_benchmark/laion5m/s1_pod1_laion5m',
+    './benchmark_results/CloudTest_v0.0.3_github_benchmark/laion5m/weaviate-laion5m-standard-client-us-east-2-server-us-east-1-GCP',
+    './benchmark_results/CloudTest_v0.0.3_github_benchmark/laion5m/zilliz-laion5m-1cu-capacity-client-us-east-2-server-us-east-2',
+    './benchmark_results/CloudTest_v0.0.3_github_benchmark/laion5m/zilliz-laion5m-4cu-performance-client-us-east-2-server-us-east-2',
+    './benchmark_results/CloudTest_v0.0.3_github_benchmark/laion5m-prob-0.01/pinecone',
+    './benchmark_results/CloudTest_v0.0.3_github_benchmark/laion5m-prob-0.01/qdrant',
+    './benchmark_results/CloudTest_v0.0.3_github_benchmark/laion5m-prob-0.01/zilliz',
+]
+for path in paths:
+    for file_path in walk_result_file_paths(root_path=path):
+        if file_path.find("search") == -1:
+            # skip `upload_data`
+            continue
+        try:
+            print(convert_string2unique_number(file_path))
+            open_temp = open(file_path, 'r')
+            each_json = json.load(open_temp)
+            open_temp.close()
+            print(file_path)
+            each_json_converted = {
+                "hash_code": convert_string2unique_number(f"{each_json['result_group']}-"
+                                                          f"{each_json['meta']['engine']['name']}-"
+                                                          f"{each_json['meta']['engine']['version']}-"
+                                                          f"{each_json['meta']['engine']['commit']}-"
+                                                          f"{each_json['meta']['engine']['remark']}-"
+                                                          f"{each_json['meta']['engine']['other']}-"
+                                                          f"{each_json['meta']['index_type']}-"
+                                                          f"{each_json['meta']['dataset']}-"
+                                                          f"{each_json['meta']['dataset_group']}-"
+                                                          f"{each_json['meta']['dataset_tag']}-"
+                                                          f"{each_json['meta']['time_stamp']}"),
+                # meta info
+                "engine": each_json['meta']['engine']['name'],
+                "version": each_json['meta']['engine']['version'],
+                "remark": each_json['meta']['engine']['other'],
+                "index_type": each_json['meta']['index_type'],
+                "dataset": each_json['meta']['dataset'],
+                "dataset_group": each_json['meta']['dataset_group'],
+                "dataset_tag": each_json['meta']['dataset_tag'],
+                "time_stamp": each_json['meta']['time_stamp'],
+                "cost": each_json['meta']['monthly_cost'] / (each_json['search_results']['rps'] / 100),
+                "monthly_cost": each_json['meta']['monthly_cost'],
+                # index parameter
+                "index_create_parameter": each_json['index_create_parameter'],
+                # search parameter
+                "index_search_params": each_json['index_search_parameter'].get('params',
+                                                                               each_json['index_search_parameter'].get(
+                                                                                   'vectorIndexConfig', '')),
+                "search_parallel": each_json['index_search_parameter']['parallel'],
+                "search_top": each_json['index_search_parameter']['top'],
+                # upload parameter
+                "upload_parallel": each_json['data_upload_parameter']['parallel'],
+                "upload_batch_size": each_json['data_upload_parameter']['batch_size'],
+                # search results
+                "mean_precisions": each_json['search_results']['mean_precisions'],
+                "rps": each_json['search_results']['rps'],
+                "p95_time": each_json['search_results']['p95_time'],
+                "mean_time": each_json['search_results']['mean_time'],
+                # upload results
+                "total_upload": each_json['upload_results']['total_time'],
+
+            }
+            # print(each_json_converted)
+            results.append(each_json_converted)
+        except Exception as e:
+            print(e)
+
+# sort results
+print(results)
+
+sorted_results = sorted(results, key=lambda x: x['mean_precisions'])
+print(sorted_results)
+with open('benchmark_data.json', 'w') as f:
+    json.dump(sorted_results, f, indent=2, ensure_ascii=False)
