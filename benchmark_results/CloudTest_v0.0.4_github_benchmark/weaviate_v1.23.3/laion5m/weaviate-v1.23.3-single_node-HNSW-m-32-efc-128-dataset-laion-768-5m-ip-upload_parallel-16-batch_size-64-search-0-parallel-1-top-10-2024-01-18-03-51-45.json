@@ -2,7 +2,7 @@
   "result_group": "single_search",
   "meta": {
     "engine": {
-      "name": "weaviate",
+      "name": "weaviate-v1.23.3-standard-HNSW",
       "branch": "tag-v1.23.3",
       "version": "v1.23.3",
       "commit": "unknown",
@@ -16,7 +16,8 @@
     "dataset_tag": "no-filter",
     "platform": "CloudTest_v0.0.4",
     "time_stamp": 1705545610664,
-    "run_date": "2024-01-18 02:40:10"
+    "run_date": "2024-01-18 02:40:10",
+    "monthly_cost": 364.8
   },
   "index_create_parameter": {
     "ef": 100,
