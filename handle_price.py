@@ -12,12 +12,13 @@ def walk_result_file_paths(root_path: str) -> Iterator[str]:
                 else:
                     print("skip invalid file: {}".format("{}/{}".format(cur_root_dir_path, file)))
 
-for file in walk_result_file_paths(root_path="./benchmark_results/CloudTest_v0.0.4_github_benchmark/opensearch_v2.7"):
+
+for file in walk_result_file_paths(root_path="./benchmark_results/CloudTest_v0.0.4_github_benchmark/weaviate_v1.23.3"):
     with open(file, 'r') as f:
         data = json.load(f)
 
-    data['meta']['monthly_cost'] = 488
-    data['meta']['engine']['name'] = 'opensearch-v2.7-1*r6g.2xlarge.search'
+    data['meta']['monthly_cost'] = 364.8
+    data['meta']['engine']['name'] = 'weaviate-v1.23.3-standard-HNSW'
     # data['meta']['engine']['commit'] = 'sha256:5e79bcbd77d08c7730e00bf26f04743c7670b7450c72cb589d82ad1fe4a399fb'
     # data['meta']['engine']['link'] = 'https://hub.docker.com/r/tensorchord/pgvecto-rs/'
     # data['meta']['engine']['remark'] = 'tensorchord/pgvecto-rs:pg15-v0.0.0-nightly.20231018-amd64'
