@@ -2,7 +2,7 @@ import json
 import os
 from utils import walk_result_file_paths
 
-from_path = "/Users/it/Pictures/myscale_benchmark_tools/benchmark_results/CloudTest_v0.0.4_github_benchmark/weaviate_v1.23.3/laion5m_prob"
+from_path = "./benchmark_results/CloudTest_v0.0.4_github_benchmark/elasticsearch_cloud_v8.12.2/laion5m_prob"
 
 for file in walk_result_file_paths(root_path=from_path):
     with open(file, 'r') as f:
