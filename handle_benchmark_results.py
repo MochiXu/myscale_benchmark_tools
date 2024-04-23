@@ -9,6 +9,9 @@ def process_results(paths: List[str]) -> List[Any]:
 
     for path in paths:
         for file_path in walk_result_file_paths(root_path=path):
+            if file_path.find("deprecated") != -1:
+                # skip deprecated dir
+                continue
             if file_path.find("search") == -1:
                 # skip `upload_data`
                 continue
